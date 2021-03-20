@@ -23,8 +23,8 @@ func TestRegisterUser(t *testing.T) {
 		Name:  "demouser",
 		Email: "demo@gmail.com",
 	}
-	usermock := new(User_Interface_Mock)
-	usermock.On("UserExists", mock.Anything).Return(false)
+	//usermock := new(User_Interface_Mock)
+	//usermock.On("UserExists", mock.Anything).Return(false)
 	val, err := RegisterUser(user)
 	// Since this is a new user we expect that no error should occur
 	assert.Nil(t,err)

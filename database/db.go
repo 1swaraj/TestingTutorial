@@ -1,5 +1,9 @@
 package database
 
+import (
+	"fmt"
+)
+
 // db act as a dummy database.
 var db map[string]int
 
@@ -13,6 +17,7 @@ func init() {
 
 // AddUser adds the user (email) to the database
 func AddUser(email string) bool {
+	fmt.Println("AddUser called in database package")
 	if UserExists(email) {
 		return false
 	}
@@ -22,6 +27,7 @@ func AddUser(email string) bool {
 
 // UserExists check if the User is registered with the provided email.
 func UserExists(email string) bool {
+	fmt.Println("UserExists called in database package")
 	if _, ok := db[email]; !ok {
 		return false
 	}
@@ -30,5 +36,6 @@ func UserExists(email string) bool {
 
 // FetchUserID returns the userid corresponding to the email of the user
 func FetchUserID(email string) int {
+	fmt.Println("FetchUserID called in database package")
 	return db[email]
 }
