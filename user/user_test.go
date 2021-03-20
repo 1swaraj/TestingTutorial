@@ -5,17 +5,22 @@ import (
 	
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-
+	"github.com/swaraj1802/TestingTutorial/database"
 )
 
-type User_Interface_Mock struct {
-	User_Interface
+type Database_Interface_Mock struct {
+	database.Database_Interface
 	mock.Mock
 }
 
-func (a *User_Interface_Mock) UserExists(email string) bool {
+func (a *Database_Interface_Mock) AddUser(email string) bool {
 	args := a.Called(email)
 	return args.Get(0).(bool)
+}
+
+func (a *Database_Interface_Mock) FetchUserID(email string) int {
+	args := a.Called(email)
+	return args.Get(0).(int)
 }
 
 func TestRegisterUser(t *testing.T) {
@@ -23,9 +28,10 @@ func TestRegisterUser(t *testing.T) {
 		Name:  "demouser",
 		Email: "demo@gmail.com",
 	}
-	//usermock := new(User_Interface_Mock)
-	//usermock.On("UserExists", mock.Anything).Return(false)
-	val, err := RegisterUser(user)
+	dbmock := new(Database_Interface_Mock)
+	dbmock.On("AddUser", mock.Anything).Return(true)
+	dbmock.On("FetchUserID", mock.Anything).Return(3)
+	val, err := RegisterUser(user,dbmock)
 	// Since this is a new user we expect that no error should occur
 	assert.Nil(t,err)
 	// We assert that the user id allocated to the user is 3
@@ -38,21 +44,12 @@ func TestRegisterUser_UserExists(t *testing.T) {
 		Name:  "john doe",
 		Email: "johndoe@gmail.com",
 	}
-	
-	_, err := RegisterUser(user)
-	// Since this is a new user, we should not get any error
-	assert.Nil(t,err)
-	
-	// Now we will try to register the another user
-	// with email id johndoe@gmail.com
-	user2 := User{
-		Name:  "not john doe",
-		Email: "johndoe@gmail.com",
-	}
-	_, err = RegisterUser(user2)
-	
-	// We should get an error since the user exists
+	dbmock := new(Database_Interface_Mock)
+	// We consider that this user is already created so we return false
+	// from the mock implementation of user
+	dbmock.On("AddUser", mock.Anything).Return(false)
+	_, err := RegisterUser(user,dbmock)
+	// Because the user exists, we must get an error
 	assert.NotNil(t, err)
 	assert.Equal(t, "user already exists",err.Error())
-	
 }
